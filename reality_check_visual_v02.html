@@ -1,0 +1,616 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Reality Check: Live — Visual Prototype v0.2</title>
+<style>
+:root{
+  --bg:#0b1013;
+  --panel:#151d22;
+  --panel2:#1d282e;
+  --line:#33434c;
+  --text:#f3f6f7;
+  --muted:#95a5ad;
+  --orange:#f09a42;
+  --cyan:#62b9c7;
+  --green:#74b889;
+  --red:#d46f6f;
+  --yellow:#d6b15e;
+  --blue:#6595ce;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  min-height:100vh;
+  background:
+    radial-gradient(circle at 80% 0%,rgba(98,185,199,.08),transparent 28%),
+    linear-gradient(180deg,#0a0f12,#10171b 55%,#0a0f12);
+  color:var(--text);
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+}
+a{-webkit-tap-highlight-color:transparent}
+.wrap{max-width:1180px;margin:0 auto;padding:18px}
+.top{
+  display:flex;align-items:center;justify-content:space-between;gap:15px;
+  padding-bottom:14px;border-bottom:1px solid var(--line)
+}
+.brand{display:flex;align-items:center;gap:12px}
+.hex{
+  width:48px;height:42px;display:grid;place-items:center;
+  background:var(--orange);color:#121212;font-weight:950;
+  clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%)
+}
+.name{font-weight:900;font-size:20px;letter-spacing:.3px}
+.tagline{font-size:11px;color:var(--muted);margin-top:2px}
+.mode{
+  border:1px solid var(--line);border-radius:999px;padding:8px 11px;
+  color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:1px
+}
+.screen{
+  display:none;
+  min-height:78vh;
+  grid-template-columns:minmax(0,1.55fr) minmax(270px,.7fr);
+  gap:16px;
+  padding-top:16px;
+}
+.screen:target{display:grid}
+#home{display:grid}
+body:has(.screen:target) #home{display:none}
+.panel{
+  background:rgba(21,29,34,.96);
+  border:1px solid var(--line);
+  border-radius:14px;
+  overflow:hidden;
+  box-shadow:0 16px 46px rgba(0,0,0,.2)
+}
+.mainpad{padding:18px}
+.sidepad{padding:16px}
+.eyebrow{
+  font-size:10px;font-weight:850;letter-spacing:1.35px;text-transform:uppercase;
+  color:var(--orange)
+}
+h1,h2,h3,p{margin-top:0}
+h1{font-size:30px;line-height:1.05;margin-bottom:8px}
+h2{font-size:26px;line-height:1.08;margin-bottom:8px}
+h3{font-size:15px;margin-bottom:8px}
+p{color:#cdd6da;line-height:1.45}
+.micro{font-size:11px;color:var(--muted)}
+.start-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:14px;margin-top:15px}
+.hero-site{
+  position:relative;min-height:380px;border-radius:11px;overflow:hidden;
+  border:1px solid var(--line);
+  background:
+    linear-gradient(135deg,transparent 49.5%,rgba(255,255,255,.02) 50%,transparent 50.5%),
+    linear-gradient(25deg,#222c31,#12191d);
+}
+.city{
+  position:absolute;inset:auto 0 0 0;height:34%;
+  background:
+    linear-gradient(90deg,
+    transparent 0 4%,#28343a 4% 10%,transparent 10% 14%,#1f2a30 14% 23%,transparent 23% 27%,
+    #2b363b 27% 34%,transparent 34% 40%,#263138 40% 49%,transparent 49% 53%,
+    #202b31 53% 61%,transparent 61% 68%,#27343a 68% 80%,transparent 80% 84%,#223037 84% 94%,transparent 94%);
+  opacity:.75
+}
+.tower{
+  position:absolute;left:21%;bottom:17%;width:54%;height:62%;
+  transform:skewY(-5deg);
+  border:1px solid #526169;
+  background:
+    repeating-linear-gradient(0deg,rgba(255,255,255,.02) 0 27px,#435058 28px 29px),
+    repeating-linear-gradient(90deg,transparent 0 65px,rgba(255,255,255,.05) 66px 67px),
+    linear-gradient(135deg,#27343a,#151d22);
+  box-shadow:22px 18px 0 #0e1417;
+}
+.tower:before{
+  content:"";position:absolute;left:13%;right:7%;top:36%;height:9px;background:var(--orange);
+  box-shadow:0 0 16px rgba(240,154,66,.35)
+}
+.tower:after{
+  content:"LEVEL 4";position:absolute;left:16%;top:29%;color:#fff;font-size:12px;font-weight:900;letter-spacing:1px
+}
+.scanbeam{
+  position:absolute;left:8%;bottom:12%;width:160px;height:160px;border-radius:50%;
+  border:1px solid rgba(98,185,199,.45);
+  background:conic-gradient(from 30deg,rgba(98,185,199,.38),transparent 27%);
+  animation:spin 3.8s linear infinite
+}
+.scanbase{
+  position:absolute;left:18%;bottom:11%;width:18px;height:38px;border:2px solid var(--cyan);border-radius:3px
+}
+.scanbase:before{content:"";position:absolute;width:8px;height:8px;border-radius:50%;background:var(--cyan);left:3px;top:-8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.hero-label{
+  position:absolute;left:18px;top:18px;padding:8px 10px;border-radius:7px;
+  background:rgba(11,16,19,.78);border:1px solid var(--line)
+}
+.hero-label b{display:block;font-size:13px}.hero-label span{font-size:11px;color:var(--muted)}
+.issue-pulse{
+  position:absolute;right:19%;top:39%;width:18px;height:18px;border-radius:50%;
+  background:var(--red);box-shadow:0 0 0 0 rgba(212,111,111,.6);animation:pulse 1.7s infinite
+}
+@keyframes pulse{
+  0%{box-shadow:0 0 0 0 rgba(212,111,111,.55)}
+  70%{box-shadow:0 0 0 16px rgba(212,111,111,0)}
+  100%{box-shadow:0 0 0 0 rgba(212,111,111,0)}
+}
+.roles{display:grid;gap:9px}
+.role{
+  text-decoration:none;color:var(--text);display:flex;align-items:center;gap:11px;
+  border:1px solid var(--line);border-radius:10px;background:var(--panel2);padding:12px;
+}
+.role:hover{border-color:#6d7f87}
+.role:first-child{border-color:var(--orange)}
+.role-icon{
+  width:38px;height:38px;border-radius:9px;background:#10171b;border:1px solid #40515a;
+  display:grid;place-items:center;font-weight:900;color:var(--orange)
+}
+.role b{font-size:13px;display:block}.role span{font-size:10px;color:var(--muted)}
+.bigbtn{
+  display:inline-block;text-decoration:none;background:var(--orange);color:#111;
+  border-radius:9px;padding:12px 16px;font-size:13px;font-weight:900;margin-top:14px
+}
+.stepbar{display:flex;gap:6px;margin-bottom:14px}
+.stepbar i{height:5px;flex:1;background:#2a363c;border-radius:5px}.stepbar i.on{background:var(--orange)}
+.floor{
+  position:relative;min-height:510px;border-radius:11px;overflow:hidden;
+  border:1px solid var(--line);background:#11181c;
+  perspective:900px
+}
+.floorplate{
+  position:absolute;left:9%;right:9%;top:13%;bottom:12%;
+  transform:rotateX(58deg) rotateZ(-29deg);
+  transform-style:preserve-3d;
+  border:2px solid #65747c;
+  background:#1c272c;
+  box-shadow:30px 38px 0 #0a0f12;
+}
+.zone{
+  position:absolute;display:flex;align-items:center;justify-content:center;
+  color:#aebbc1;font-weight:900;font-size:14px;border:1px solid #43545c;
+  text-decoration:none;overflow:hidden
+}
+.za{left:0;top:0;width:48%;height:46%;background:#202b30}
+.zb{right:0;top:0;width:50%;height:46%;background:#202a2f}
+.zc{left:0;bottom:0;width:48%;height:52%;background:#222c31}
+.zd{right:0;bottom:0;width:50%;height:52%;background:#222b31}
+.zone:before{
+  content:"";position:absolute;inset:8%;
+  background:
+    linear-gradient(90deg,transparent 0 24%,#50616a 25% 26%,transparent 27% 49%,#50616a 50% 51%,transparent 52%),
+    linear-gradient(0deg,transparent 0 31%,#50616a 32% 33%,transparent 34% 66%,#50616a 67% 68%,transparent 69%);
+  opacity:.42
+}
+.zone span{position:relative;z-index:2;background:#11181c;border:1px solid #41515a;border-radius:5px;padding:4px 7px}
+.zone.hot{box-shadow:inset 0 0 0 3px var(--yellow);background:#2a2a24}
+.zone.hot2{box-shadow:inset 0 0 0 3px var(--red);background:#2b2426}
+.scanoverlay{
+  position:absolute;left:10%;bottom:8%;width:42%;height:43%;
+  background:repeating-linear-gradient(90deg,rgba(98,185,199,.28) 0 9px,transparent 10px 18px);
+  mix-blend-mode:screen;opacity:.8
+}
+.legend{
+  position:absolute;left:14px;bottom:14px;background:rgba(11,16,19,.84);border:1px solid var(--line);
+  border-radius:8px;padding:8px 10px;font-size:10px;color:var(--muted)
+}
+.legend b{color:var(--text)}
+.action-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:11px}
+.action{
+  min-height:70px;text-decoration:none;color:var(--text);display:flex;flex-direction:column;justify-content:center;
+  border:1px solid var(--line);border-radius:9px;padding:10px;background:var(--panel2)
+}
+.action strong{font-size:12px}.action small{font-size:9.5px;color:var(--muted);margin-top:3px}
+.action.primary{border-color:var(--orange)}
+.kpi{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.k{
+  border:1px solid var(--line);background:var(--panel2);border-radius:9px;padding:10px
+}
+.k span{display:block;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.7px}
+.k b{font-size:18px;margin-top:2px;display:block}
+.alert{
+  display:flex;align-items:center;gap:8px;border-left:3px solid var(--yellow);
+  background:#1d2529;padding:9px 10px;border-radius:4px;font-size:11px;margin-top:9px
+}
+.alert.red{border-left-color:var(--red)}
+.alert.green{border-left-color:var(--green)}
+.countdown{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:11px;border:1px solid var(--line);border-radius:9px;background:#11181c;margin-bottom:10px
+}
+.countdown b{font-size:24px;color:var(--red)} .countdown span{font-size:10px;color:var(--muted);text-transform:uppercase}
+.modelstage{
+  position:relative;min-height:500px;border:1px solid var(--line);border-radius:11px;overflow:hidden;
+  background:
+    linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px),
+    #0f161a;
+  background-size:30px 30px
+}
+.model-label{
+  position:absolute;top:15px;left:15px;border:1px solid var(--line);background:#141c20;
+  border-radius:8px;padding:7px 9px;font-size:10px;color:var(--muted)
+}
+.design-duct,.actual-duct{
+  position:absolute;left:17%;right:16%;height:38px;border-radius:6px;
+  transform:skewX(-17deg)
+}
+.design-duct{top:39%;border:2px dashed var(--blue);background:rgba(101,149,206,.10)}
+.actual-duct{top:52%;border:2px solid var(--red);background:rgba(212,111,111,.15);box-shadow:0 0 18px rgba(212,111,111,.08)}
+.hanger{position:absolute;top:28%;height:37%;width:2px;background:#77858b}
+.h1{left:30%}.h2{left:52%}.h3{left:73%}
+.dimline{
+  position:absolute;right:10%;top:43%;height:90px;width:38px;border-left:1px solid #c7d0d4;
+}
+.dimline:before,.dimline:after{content:"";position:absolute;left:-5px;width:10px;height:1px;background:#c7d0d4}
+.dimline:before{top:0}.dimline:after{bottom:0}
+.dimtext{position:absolute;right:4.5%;top:46%;font-size:28px;font-weight:950;color:var(--red)}
+.tolbox{
+  position:absolute;left:16%;bottom:12%;right:16%;
+  display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px
+}
+.tol{
+  background:#151e23;border:1px solid var(--line);border-radius:8px;padding:10px;text-align:center
+}
+.tol span{font-size:9px;color:var(--muted);display:block;text-transform:uppercase}
+.tol b{font-size:16px}
+.costcurve{
+  display:flex;align-items:end;gap:8px;height:120px;padding:10px 0 4px
+}
+.costbar{flex:1;background:var(--green);border-radius:5px 5px 0 0;position:relative}
+.costbar:nth-child(2){background:var(--yellow)}
+.costbar:nth-child(3){background:var(--red)}
+.costbar span{position:absolute;left:50%;transform:translateX(-50%);bottom:100%;margin-bottom:4px;font-size:10px;font-weight:800}
+.asbuilt-stage{
+  min-height:500px;border:1px solid var(--line);border-radius:11px;background:#10171b;
+  padding:16px;display:grid;grid-template-rows:auto 1fr auto;gap:12px
+}
+.cardrow{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;align-items:stretch}
+.change{
+  border:1px solid var(--line);background:#182126;border-radius:10px;padding:12px;
+  display:grid;grid-template-rows:auto 1fr auto;gap:10px
+}
+.change.verified{border-color:var(--green)}
+.change.pending{border-color:var(--yellow)}
+.change .mini3d{
+  height:120px;border-radius:8px;background:
+    linear-gradient(135deg,transparent 46%,#4e5c63 47% 49%,transparent 50%),
+    linear-gradient(25deg,#202c31,#11181c);
+  position:relative;overflow:hidden
+}
+.wall{
+  position:absolute;left:36%;top:18%;width:26%;height:70%;background:#536269;
+  transform:skewY(-12deg);box-shadow:18px 9px 0 #2b353a
+}
+.pipe{
+  position:absolute;left:14%;right:10%;top:46%;height:14px;border-radius:10px;background:var(--cyan);
+  transform:rotate(-9deg)
+}
+.valve{
+  position:absolute;left:42%;top:36%;width:34px;height:34px;border:5px solid var(--yellow);border-radius:50%
+}
+.valve:after{content:"?";position:absolute;inset:0;display:grid;place-items:center;color:#fff;font-weight:900}
+.status{
+  display:inline-block;width:max-content;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.7px;
+  border-radius:999px;padding:4px 7px;background:#11181c;border:1px solid var(--line)
+}
+.status.good{color:var(--green);border-color:rgba(116,184,137,.45)}
+.status.wait{color:var(--yellow);border-color:rgba(214,177,94,.45)}
+.status.info{color:var(--cyan);border-color:rgba(98,185,199,.45)}
+.updatebar{
+  display:flex;align-items:center;justify-content:space-between;gap:14px;border:1px solid var(--line);
+  background:#151e23;border-radius:10px;padding:11px 12px
+}
+.readiness{font-size:23px;font-weight:950}
+.dashboard{
+  min-height:500px;border:1px solid var(--line);border-radius:11px;background:#10171b;padding:14px;
+  display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto 1fr;gap:10px
+}
+.dash-card{border:1px solid var(--line);background:#172025;border-radius:9px;padding:11px}
+.dash-card.big{grid-column:1 / -1}
+.variance{font-size:38px;font-weight:950;color:var(--red)}
+.progressbars{display:grid;gap:7px;margin-top:8px}
+.pb{display:grid;grid-template-columns:70px 1fr 38px;gap:8px;align-items:center;font-size:10px}
+.track{height:8px;border-radius:5px;background:#29343a;overflow:hidden}.track i{display:block;height:100%;background:var(--cyan)}
+.heat{
+  display:grid;grid-template-columns:1fr 1fr;gap:5px;height:165px;margin-top:7px
+}
+.heat div{border:1px solid #425159;border-radius:5px;display:grid;place-items:center;font-size:11px;font-weight:900}
+.heat .ok{background:rgba(116,184,137,.15)}.heat .warn{background:rgba(214,177,94,.18)}.heat .bad{background:rgba(212,111,111,.22)}
+.resultwrap{
+  display:grid;place-items:center;text-align:center;min-height:500px;padding:20px;
+  background:
+    radial-gradient(circle at center,rgba(240,154,66,.10),transparent 38%),
+    #10171b
+}
+.scorebig{font-size:70px;font-weight:950;line-height:1}
+.resultstats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;width:100%;margin-top:18px}
+.rs{border:1px solid var(--line);background:#182126;border-radius:9px;padding:11px}
+.rs span{display:block;font-size:9px;color:var(--muted);text-transform:uppercase}.rs b{font-size:18px}
+.leader{
+  margin-top:12px;border:1px solid var(--orange);border-radius:9px;padding:9px 12px;color:var(--orange);font-weight:900;font-size:13px
+}
+.footer{text-align:center;color:var(--muted);font-size:9px;padding:15px 0}
+@media(max-width:860px){
+  .screen,#home{grid-template-columns:1fr}
+  .start-grid{grid-template-columns:1fr}
+  .hero-site{min-height:310px}
+  .floor,.modelstage,.asbuilt-stage,.dashboard{min-height:430px}
+  .cardrow{grid-template-columns:1fr}
+  .change{grid-template-columns:120px 1fr auto;grid-template-rows:1fr;align-items:center}
+  .change .mini3d{height:100px}
+}
+@media(max-width:560px){
+  .wrap{padding:12px}
+  .top{align-items:flex-start}
+  .mode{display:none}
+  .action-row{grid-template-columns:1fr}
+  .resultstats{grid-template-columns:1fr 1fr}
+  .dashboard{grid-template-columns:1fr;grid-template-rows:auto}
+  .dash-card.big{grid-column:auto}
+  .change{grid-template-columns:1fr;grid-template-rows:auto}
+  .floorplate{left:3%;right:3%;top:18%;bottom:17%}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <div class="hex">RC</div>
+      <div>
+        <div class="name">Reality Check: Live</div>
+        <div class="tagline">Capture reality. Create context. Analyze what matters.</div>
+      </div>
+    </div>
+    <div class="mode">Visual prototype v0.2</div>
+  </header>
+
+  <section id="home" class="screen">
+    <div class="panel mainpad">
+      <div class="eyebrow">Today's Challenge</div>
+      <h1>Hospital Tower: Close-In</h1>
+      <div class="start-grid">
+        <div class="hero-site">
+          <div class="hero-label"><b>Level 4 MEP</b><span>Close-in in 18 hours</span></div>
+          <div class="tower"></div><div class="city"></div>
+          <div class="scanbeam"></div><div class="scanbase"></div><div class="issue-pulse"></div>
+        </div>
+        <div>
+          <div class="eyebrow">Pick a role</div>
+          <div class="roles" style="margin-top:8px">
+            <a class="role" href="#capture"><div class="role-icon">V</div><div><b>VDC Manager</b><span>Models + deviations</span></div></a>
+            <a class="role" href="#capture"><div class="role-icon">S</div><div><b>Superintendent</b><span>Field + close-in</span></div></a>
+            <a class="role" href="#capture"><div class="role-icon">P</div><div><b>Project Manager</b><span>Schedule + cost</span></div></a>
+          </div>
+          <a class="bigbtn" href="#capture">Start as VDC Manager</a>
+        </div>
+      </div>
+    </div>
+    <aside class="panel sidepad">
+      <div class="eyebrow">Project Pulse</div>
+      <div class="kpi" style="margin-top:10px">
+        <div class="k"><span>Planned</span><b>68%</b></div>
+        <div class="k"><span>Observed</span><b>61%</b></div>
+        <div class="k"><span>As-Built</span><b>63%</b></div>
+        <div class="k"><span>Close-In</span><b style="color:var(--red)">18h</b></div>
+      </div>
+      <div class="alert red">4 deviation flags overnight</div>
+      <div class="alert">Electrical revision received</div>
+      <div class="alert green">East corridor captured</div>
+    </aside>
+  </section>
+
+  <section id="capture" class="screen">
+    <div class="panel mainpad">
+      <div class="stepbar"><i class="on"></i><i></i><i></i><i></i><i></i></div>
+      <div class="eyebrow">Capture</div>
+      <h2>Where do you scan?</h2>
+      <div class="floor">
+        <div class="floorplate">
+          <a class="zone za" href="#analyze1"><span>A</span></a>
+          <a class="zone zb" href="#analyze1"><span>B</span></a>
+          <a class="zone zc hot" href="#analyze1"><span>C</span></a>
+          <a class="zone zd hot2" href="#analyze1"><span>D</span></a>
+          <div class="scanoverlay"></div>
+        </div>
+        <div class="legend"><b>2 capture windows left</b><br>Yellow = schedule risk · Red = revision</div>
+      </div>
+      <div class="action-row">
+        <a class="action primary" href="#analyze1"><strong>SCAN C + D</strong><small>Prioritize risk</small></a>
+        <a class="action" href="#analyze1"><strong>SCAN FULL FLOOR</strong><small>Broad coverage</small></a>
+        <a class="action" href="#analyze1"><strong>SCAN A</strong><small>Finish completed work</small></a>
+      </div>
+    </div>
+    <aside class="panel sidepad">
+      <div class="countdown"><span>Close-In</span><b>18h</b></div>
+      <div class="kpi">
+        <div class="k"><span>Zone C</span><b style="color:var(--yellow)">-9%</b></div>
+        <div class="k"><span>Zone D</span><b style="color:var(--red)">REV</b></div>
+      </div>
+      <div class="alert">Tap a zone or choose a capture strategy.</div>
+    </aside>
+  </section>
+
+  <section id="analyze1" class="screen">
+    <div class="panel mainpad">
+      <div class="stepbar"><i class="on"></i><i class="on"></i><i></i><i></i><i></i></div>
+      <div class="eyebrow">Analyze</div>
+      <h2>Problem or acceptable?</h2>
+      <div class="modelstage">
+        <div class="model-label">CHW-4C-117 · confidence 96%</div>
+        <div class="design-duct"></div><div class="actual-duct" style="top:44%"></div>
+        <div class="hanger h1"></div><div class="hanger h2"></div><div class="hanger h3"></div>
+        <div class="dimline" style="height:44px;top:40%"></div><div class="dimtext" style="top:39%">1.2"</div>
+        <div class="tolbox">
+          <div class="tol"><span>Observed</span><b>1.2"</b></div>
+          <div class="tol"><span>Tolerance</span><b>±2.0"</b></div>
+          <div class="tol"><span>Clash</span><b style="color:var(--green)">NONE</b></div>
+        </div>
+      </div>
+      <div class="action-row">
+        <a class="action primary" href="#analyze2"><strong>CLOSE</strong><small>Within tolerance</small></a>
+        <a class="action" href="#analyze2"><strong>ESCALATE</strong><small>Create issue</small></a>
+        <a class="action" href="#analyze2"><strong>IGNORE</strong><small>Drop from record</small></a>
+      </div>
+    </div>
+    <aside class="panel sidepad">
+      <div class="eyebrow">Tolerance Check</div>
+      <div class="kpi" style="margin-top:10px">
+        <div class="k"><span>Offset</span><b>1.2"</b></div>
+        <div class="k"><span>Allowed</span><b>2.0"</b></div>
+      </div>
+      <div class="alert green">Not every red overlay is a field problem.</div>
+    </aside>
+  </section>
+
+  <section id="analyze2" class="screen">
+    <div class="panel mainpad">
+      <div class="stepbar"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></div>
+      <div class="eyebrow">Analyze</div>
+      <h2>Close-in risk detected</h2>
+      <div class="modelstage">
+        <div class="model-label">DUCT-4C-042 · downstream conflict likely</div>
+        <div class="design-duct"></div><div class="actual-duct"></div>
+        <div class="hanger h1"></div><div class="hanger h2"></div><div class="hanger h3"></div>
+        <div class="dimline"></div><div class="dimtext">5.4"</div>
+        <div class="tolbox">
+          <div class="tol"><span>Fix now</span><b style="color:var(--green)">$8K</b></div>
+          <div class="tol"><span>After close-in</span><b style="color:var(--red)">$41K</b></div>
+          <div class="tol"><span>Window</span><b style="color:var(--yellow)">18h</b></div>
+        </div>
+      </div>
+      <div class="action-row">
+        <a class="action primary" href="#create"><strong>VERIFY + PUSH</strong><small>Act before close-in</small></a>
+        <a class="action" href="#create"><strong>WAIT FOR OAC</strong><small>Review tomorrow</small></a>
+        <a class="action" href="#create"><strong>SCAN AGAIN</strong><small>Increase certainty</small></a>
+      </div>
+    </div>
+    <aside class="panel sidepad">
+      <div class="countdown"><span>Window</span><b>18h</b></div>
+      <div class="eyebrow">Cost curve</div>
+      <div class="costcurve">
+        <div class="costbar" style="height:24%"><span>$8K</span></div>
+        <div class="costbar" style="height:54%"><span>$22K</span></div>
+        <div class="costbar" style="height:95%"><span>$41K</span></div>
+      </div>
+      <div class="micro" style="display:flex;justify-content:space-between"><span>NOW</span><span>TOMORROW</span><span>CLOSED</span></div>
+    </aside>
+  </section>
+
+  <section id="create" class="screen">
+    <div class="panel mainpad">
+      <div class="stepbar"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></div>
+      <div class="eyebrow">Create</div>
+      <h2>Friday as-built update</h2>
+      <div class="asbuilt-stage">
+        <div class="micro">Tap the field reality that belongs in the record.</div>
+        <div class="cardrow">
+          <div class="change">
+            <div class="mini3d"><div class="pipe"></div></div>
+            <div><b>PIPE +1.2"</b><br><span class="micro">Within tolerance</span></div>
+            <span class="status info">Record context</span>
+          </div>
+          <div class="change verified">
+            <div class="mini3d"><div class="wall"></div></div>
+            <div><b>WALL +6"</b><br><span class="micro">Design team accepted</span></div>
+            <span class="status good">Verified</span>
+          </div>
+          <div class="change pending">
+            <div class="mini3d"><div class="valve"></div></div>
+            <div><b>VALVE MOVED</b><br><span class="micro">Location uncertain</span></div>
+            <span class="status wait">Verify first</span>
+          </div>
+        </div>
+        <div class="updatebar">
+          <div><span class="micro">As-built readiness</span><div class="readiness">63% → 91%</div></div>
+          <a class="bigbtn" style="margin:0" href="#oac">UPDATE VERIFIED</a>
+        </div>
+      </div>
+    </div>
+    <aside class="panel sidepad">
+      <div class="eyebrow">Information Debt</div>
+      <div class="kpi" style="margin-top:10px">
+        <div class="k"><span>Verified</span><b style="color:var(--green)">1</b></div>
+        <div class="k"><span>Pending</span><b style="color:var(--yellow)">1</b></div>
+      </div>
+      <div class="alert">As-built update due Friday.</div>
+      <div class="alert green">Accepted field changes can move directly into the record.</div>
+    </aside>
+  </section>
+
+  <section id="oac" class="screen">
+    <div class="panel mainpad">
+      <div class="stepbar"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></div>
+      <div class="eyebrow">OAC Meeting</div>
+      <h2>What needs attention?</h2>
+      <div class="dashboard">
+        <div class="dash-card big">
+          <div class="micro">Overall progress variance</div>
+          <div class="variance">-7%</div>
+          <div class="progressbars">
+            <div class="pb"><span>Planned</span><div class="track"><i style="width:68%"></i></div><b>68%</b></div>
+            <div class="pb"><span>Observed</span><div class="track"><i style="width:61%;background:var(--yellow)"></i></div><b>61%</b></div>
+          </div>
+        </div>
+        <div class="dash-card">
+          <div class="micro">Where is the variance?</div>
+          <div class="heat">
+            <div class="ok">A<br>+1%</div>
+            <div class="ok">B<br>0%</div>
+            <div class="bad">C<br>-9%</div>
+            <div class="warn">D<br>-2%</div>
+          </div>
+        </div>
+        <div class="dash-card">
+          <div class="micro">Action queue</div>
+          <div class="alert red">Zone C duct · verified</div>
+          <div class="alert">Electrical revision · Zone D</div>
+          <div class="alert green">As-built update · ready</div>
+        </div>
+      </div>
+      <div class="action-row">
+        <a class="action" href="#result"><strong>ACCELERATE ALL</strong><small>Floor is 7% behind</small></a>
+        <a class="action primary" href="#result"><strong>FIX ZONE C</strong><small>Protect close-in</small></a>
+        <a class="action" href="#result"><strong>REPORT METRICS</strong><small>No recommendation</small></a>
+      </div>
+    </div>
+    <aside class="panel sidepad">
+      <div class="countdown"><span>OAC answer</span><b style="color:var(--orange)">20s</b></div>
+      <div class="alert green">Turn the dashboard into one action.</div>
+    </aside>
+  </section>
+
+  <section id="result" class="screen">
+    <div class="panel">
+      <div class="resultwrap">
+        <div>
+          <div class="eyebrow">Reality Check Complete</div>
+          <div class="scorebig">8,740</div>
+          <div style="font-weight:900;color:var(--orange);margin-top:5px">STRONG PROJECT READ</div>
+          <div class="resultstats">
+            <div class="rs"><span>Days protected</span><b>3</b></div>
+            <div class="rs"><span>Rework avoided</span><b>$64K</b></div>
+            <div class="rs"><span>As-built</span><b>91%</b></div>
+            <div class="rs"><span>Judgment</span><b>88%</b></div>
+          </div>
+          <div class="leader">#4 today among VDC Managers</div>
+          <a class="bigbtn" href="#home">PLAY AGAIN</a>
+        </div>
+      </div>
+    </div>
+    <aside class="panel sidepad">
+      <div class="eyebrow">Today’s board</div>
+      <div class="alert green">1 · Superintendent · 9,120</div>
+      <div class="alert">2 · VDC Manager · 8,980</div>
+      <div class="alert">3 · Project Manager · 8,810</div>
+      <div class="alert" style="border-left-color:var(--orange)">4 · You · 8,740</div>
+      <div class="micro" style="margin-top:12px">Prototype score is illustrative in this tap-through build.</div>
+    </aside>
+  </section>
+
+  <div class="footer">Reality Check: Live · visual gameplay prototype v0.2</div>
+</div>
+</body>
+</html>
